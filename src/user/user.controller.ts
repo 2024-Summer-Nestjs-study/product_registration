@@ -1,6 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserRegistDto } from '../userDto/user.regist.dto';
+import { UserLoginDto } from '../userDto/user.login.dto';
 
 @Controller('user')
 export class UserController {
@@ -9,5 +10,9 @@ export class UserController {
   @Get('regist')
   async regist(@Query() query: UserRegistDto) {
     return this.userService.regist(query);
+  }
+  @Get('login')
+  async login(@Query() query: UserLoginDto) {
+    return this.userService.login(query);
   }
 }
