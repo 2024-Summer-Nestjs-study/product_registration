@@ -1,8 +1,9 @@
-import { Controller, Get, Patch, Query } from '@nestjs/common';
+import { Controller, Delete, Get, Patch, Query } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { ProductCreateDto } from './productDto/product.create.dto';
 import { ProductFindDto } from './productDto/product.find.dto';
 import { ProductEditDto } from './productDto/product.edit.dto';
+import { ProductDeleteDto } from './productDto/product.delete.dto';
 
 @Controller('product')
 export class ProductController {
@@ -19,5 +20,9 @@ export class ProductController {
   @Patch('edit')
   async edit(@Query() query: ProductEditDto) {
     return this.productService.edit(query);
+  }
+  @Delete('delete')
+  async delete(@Query() query: ProductDeleteDto) {
+    return this.productService.delete(query);
   }
 }
