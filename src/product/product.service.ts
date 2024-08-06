@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { ProductCreateDto } from './productDto/product.create.dto';
 import { UserEntity } from '../Entity/user.entity';
 import { ProductFindDto } from './productDto/product.find.dto';
+import { ProductEditDto } from './productDto/product.edit.dto';
 
 @Injectable()
 export class ProductService {
@@ -44,6 +45,21 @@ export class ProductService {
     });
     console.log(data);
     if (!data[0]) throw new NotFoundException('등록되어 있지 않습니다.');
+    return data;
+  }
+  async edit(query: ProductEditDto) {
+    const data: ProductEntity = await this.productEntity.findOne({
+      where: {
+        name: query.name,
+      },
+    });
+    if (!data) {
+      throw new NotFoundException('등록되어있지 않은 상품입니다.');
+    }
+    await this.productEntity.update(
+      { name: query.name },
+      { price: query.price },
+    );
     return data;
   }
 }
