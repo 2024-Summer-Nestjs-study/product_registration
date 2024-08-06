@@ -1,7 +1,8 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserRegistDto } from '../userDto/user.regist.dto';
 import { UserLoginDto } from '../userDto/user.login.dto';
+import { UserUpdateDto } from '../userDto/user.update.dto';
 
 @Controller('user')
 export class UserController {
@@ -14,5 +15,9 @@ export class UserController {
   @Get('login')
   async login(@Query() query: UserLoginDto) {
     return this.userService.login(query);
+  }
+  @Patch('update')
+  async update(@Query() query: UserUpdateDto) {
+    return this.userService.update(query);
   }
 }

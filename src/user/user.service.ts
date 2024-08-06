@@ -4,6 +4,7 @@ import { UserEntity } from '../Entity/user.entity';
 import { Repository } from 'typeorm';
 import { UserRegistDto } from '../userDto/user.regist.dto';
 import { UserLoginDto } from '../userDto/user.login.dto';
+import { UserUpdateDto } from '../userDto/user.update.dto';
 
 @Injectable()
 export class UserService {
@@ -31,5 +32,25 @@ export class UserService {
     if (!data) throw new NotFoundException('옳지 않은 회원정보입니다.');
     console.log(data);
     return `${data.userName}님 환영합니다!`;
+  }
+  async update(query: UserUpdateDto) {
+    const data: UserEntity = await this.userEntity.findOne({
+      where: {
+        userName: query.userName,
+      },
+    });
+    if (!data) {
+      throw new NotFoundException('등록되어있지 않은 회원정보 입니다.');
+    }
+    await this.userEntity.update(
+      { userName: query.userName },
+      { userID: query.userID, userPW: query.userPW },
+    );
+    const updatedata: UserUpdateDto = await this.userEntity.findOne({
+      where: {
+        userName: data.userName,
+      },
+    });
+    return `${updatedata.userName}님의 회원정보가 변경되었습니다!`;
   }
 }
