@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, Patch, Query } from "@nestjs/common";
 import { UserService } from './user.service';
-import { UserRegistDto } from '../userDto/user.regist.dto';
-import { UserLoginDto } from '../userDto/user.login.dto';
-import { UserUpdateDto } from '../userDto/user.update.dto';
-import { UserDeleteDto } from "../userDto/user.delete.dto";
+import { UserRegistDto } from './userDto/user.regist.dto';
+import { UserLoginDto } from './userDto/user.login.dto';
+import { UserUpdateDto } from './userDto/user.update.dto';
+import { UserDeleteDto } from "./userDto/user.delete.dto";
 
 @Controller('user')
 export class UserController {
