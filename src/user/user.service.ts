@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { UserRegistDto } from '../userDto/user.regist.dto';
 import { UserLoginDto } from '../userDto/user.login.dto';
 import { UserUpdateDto } from '../userDto/user.update.dto';
+import { UserDeleteDto } from '../userDto/user.delete.dto';
 
 @Injectable()
 export class UserService {
@@ -52,5 +53,17 @@ export class UserService {
       },
     });
     return `${updatedata.userName}님의 회원정보가 변경되었습니다!`;
+  }
+  async delete(query: UserDeleteDto) {
+    const data = await this.userEntity.findOne({
+      where: {
+        userName: query.userName,
+        userID: query.userID,
+        userPW: query.userPW,
+      },
+    });
+    if (!data) throw new NotFoundException('저장되어있지 않은 회원정보입니다.');
+    await this.userEntity.delete(data);
+    return '회원탈퇴 되었습니다.';
   }
 }
