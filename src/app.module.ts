@@ -4,10 +4,7 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './Entity/user.entity';
 import { ProductEntity } from './Entity/product.entity';
-import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
-import { UserController } from './user/user.controller';
-
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -22,7 +19,8 @@ import { UserController } from './user/user.controller';
     }),
     UserModule,
   ],
-  controllers: [AppController, UserController],
+  controllers: [AppController],
   providers: [AppService],
+  exports: [TypeOrmModule],
 })
 export class AppModule {}
