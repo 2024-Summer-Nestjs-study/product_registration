@@ -6,12 +6,16 @@ import { UserRegistDto } from './userDto/user.regist.dto';
 import { UserLoginDto } from './userDto/user.login.dto';
 import { UserUpdateDto } from './userDto/user.update.dto';
 import { UserDeleteDto } from './userDto/user.delete.dto';
+import { ProductEntity } from '../Entity/product.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userEntity: Repository<UserEntity>,
+
+    @InjectRepository(ProductEntity)
+    private readonly productEntity: Repository<ProductEntity>,
   ) {}
   async regist(query: UserRegistDto) {
     const data: UserEntity = new UserEntity();
@@ -55,15 +59,21 @@ export class UserService {
     return `${updatedata.userName}님의 회원정보가 변경되었습니다!`;
   }
   async delete(query: UserDeleteDto) {
-    const data = await this.userEntity.findOne({
+    const user = await this.userEntity.findOne({
       where: {
         userName: query.userName,
         userID: query.userID,
         userPW: query.userPW,
       },
     });
-    if (!data) throw new NotFoundException('저장되어있지 않은 회원정보입니다.');
-    await this.userEntity.delete(data);
+    if (!user) throw new NotFoundException('저장되어있지 않은 회원정보입니다.');
+    const product = await this.productEntity
+      .createQueryBuilder('product_entity')
+      .delete()
+      .where('userID = :userID', { userID: user.id })
+      .execute();
+    console.log(product);
+    await this.userEntity.delete(user);
     return '회원탈퇴 되었습니다.';
   }
 }
