@@ -7,12 +7,14 @@ import { UserLoginDto } from './userDto/user.login.dto';
 import { UserUpdateDto } from './userDto/user.update.dto';
 import { UserDeleteDto } from './userDto/user.delete.dto';
 import { ProductEntity } from '../Entity/product.entity';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userEntity: Repository<UserEntity>,
+    private jwtService: JwtService,
 
     @InjectRepository(ProductEntity)
     private readonly productEntity: Repository<ProductEntity>,
@@ -35,8 +37,21 @@ export class UserService {
       },
     });
     if (!data) throw new NotFoundException('옳지 않은 회원정보입니다.');
-    console.log(data);
-    return `${data.userName}님 환영합니다!`;
+    console.log(data); //로그인 성공시 토큰 발급
+    const payload = {
+      id: data.id.toString(),
+    };
+    const secretA = '0000';
+    const secretR = '1234';
+    const refresh = this.jwtService.sign(payload, {
+      secret: secretR,
+      expiresIn: '1h',
+    });
+    const access = this.jwtService.sign(payload, {
+      secret: secretA,
+      expiresIn: '10s',
+    });
+    return [access, refresh];
   }
   async update(query: UserUpdateDto) {
     const data: UserEntity = await this.userEntity.findOne({
