@@ -22,9 +22,10 @@ import { JwtModule } from '@nestjs/jwt';
     }),
     UserModule,
     ProductModule,
+    JwtModule,
   ],
   controllers: [AppController],
   providers: [AppService],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, JwtModule],
 })
 export class AppModule {}
