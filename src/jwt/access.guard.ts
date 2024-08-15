@@ -7,7 +7,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
-export class JwtGuard implements CanActivate {
+export class AccessGuard implements CanActivate {
   constructor(private jwtService: JwtService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -18,7 +18,6 @@ export class JwtGuard implements CanActivate {
       throw new UnauthorizedException();
     }
     const secretA = '0000';
-    const secretR = '1234';
     try {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: secretA,
@@ -31,18 +30,6 @@ export class JwtGuard implements CanActivate {
       console.log(e);
       throw new UnauthorizedException();
       return req['user'];
-    }
-    try {
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: secretR,
-      });
-      req['user'] = payload;
-    } catch (e) {
-      if (e.name === 'JsonWebTokenError') {
-        throw new UnauthorizedException('refresh 아닌데?');
-      }
-      console.log(e);
-      throw new UnauthorizedException();
     }
     return true;
   }
