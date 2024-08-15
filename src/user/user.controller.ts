@@ -29,8 +29,9 @@ export class UserController {
     return this.userService.login(query);
   }
   @Patch('update')
-  async update(@Query() query: UserUpdateDto) {
-    return this.userService.update(query);
+  @UseGuards(AccessGuard)
+  async update(@Query() query: UserUpdateDto, @Request() req: Request) {
+    return this.userService.update(query, req);
   }
   @Delete('delete')
   async delete(@Query() query: UserDeleteDto) {

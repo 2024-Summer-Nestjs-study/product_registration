@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, Request } from '@nestjs/common';
+import { Injectable, NotFoundException, Request } from "@nestjs/common";
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../Entity/user.entity';
 import { Repository } from 'typeorm';
@@ -40,6 +40,7 @@ export class UserService {
     console.log(data); //로그인 성공시 토큰 발급
     const payload = {
       id: data.id.toString(),
+      userName: data.userName.toString(),
     };
     const secretA = '0000';
     const secretR = '1234';
@@ -49,7 +50,7 @@ export class UserService {
     });
     const accessToken = this.jwtService.sign(payload, {
       secret: secretA,
-      expiresIn: '10s',
+      expiresIn: '100s',
     });
     return (
       'accessToken : ' +
@@ -59,22 +60,22 @@ export class UserService {
       [refreshToken]
     );
   }
-  async update(query: UserUpdateDto) {
+  async update(query: UserUpdateDto, @Request() req: Request) {
     const data: UserEntity = await this.userEntity.findOne({
       where: {
-        userName: query.userName,
+        userName: req['user'].userName,
       },
     });
     if (!data) {
       throw new NotFoundException('등록되어있지 않은 회원정보 입니다.');
     }
     await this.userEntity.update(
-      { userName: query.userName },
+      { userName: req['user'].userName },
       { userID: query.userID, userPW: query.userPW },
     );
-    const updatedata: UserUpdateDto = await this.userEntity.findOne({
+    const updatedata = await this.userEntity.findOne({
       where: {
-        userName: data.userName,
+        userName: req['user'].userName,
       },
     });
     return `${updatedata.userName}님의 회원정보가 변경되었습니다!`;
@@ -104,7 +105,7 @@ export class UserService {
     const secretA = '0000';
     const newaccess = await this.jwtService.sign(newpayload, {
       secret: secretA,
-      expiresIn: '30s',
+      expiresIn: '100s',
     });
     return newaccess;
   }
