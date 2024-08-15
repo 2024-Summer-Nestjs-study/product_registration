@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Request } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../Entity/user.entity';
 import { Repository } from 'typeorm';
@@ -43,15 +43,21 @@ export class UserService {
     };
     const secretA = '0000';
     const secretR = '1234';
-    const refresh = this.jwtService.sign(payload, {
+    const refreshToken = this.jwtService.sign(payload, {
       secret: secretR,
       expiresIn: '1h',
     });
-    const access = this.jwtService.sign(payload, {
+    const accessToken = this.jwtService.sign(payload, {
       secret: secretA,
       expiresIn: '10s',
     });
-    return [access, refresh];
+    return (
+      'accessToken : ' +
+      [accessToken] +
+      '\n' +
+      'refreshToken : ' +
+      [refreshToken]
+    );
   }
   async update(query: UserUpdateDto) {
     const data: UserEntity = await this.userEntity.findOne({
@@ -90,5 +96,16 @@ export class UserService {
     console.log(product);
     await this.userEntity.delete(user);
     return '회원탈퇴 되었습니다.';
+  }
+  async getAccess(@Request() req: Request) {
+    const newpayload = {
+      id: req['user'].id,
+    };
+    const secretA = '0000';
+    const newaccess = await this.jwtService.sign(newpayload, {
+      secret: secretA,
+      expiresIn: '30s',
+    });
+    return newaccess;
   }
 }
