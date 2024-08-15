@@ -34,8 +34,9 @@ export class UserController {
     return this.userService.update(query, req);
   }
   @Delete('delete')
-  async delete(@Query() query: UserDeleteDto) {
-    return this.userService.delete(query);
+  @UseGuards(AccessGuard)
+  async delete(@Query() query: UserDeleteDto, @Request() req: Request) {
+    return this.userService.delete(query, req);
   }
   @Post('hi')
   @UseGuards(AccessGuard)

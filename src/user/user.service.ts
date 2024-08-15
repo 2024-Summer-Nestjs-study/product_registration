@@ -80,12 +80,12 @@ export class UserService {
     });
     return `${updatedata.userName}님의 회원정보가 변경되었습니다!`;
   }
-  async delete(query: UserDeleteDto) {
+  async delete(query: UserDeleteDto, @Request() req: Request) {
     const user = await this.userEntity.findOne({
       where: {
-        userName: query.userName,
-        userID: query.userID,
-        userPW: query.userPW,
+        userName: req['user'].userName,
+        userID: req['user'].userID,
+        userPW: req['user'].userPW,
       },
     });
     if (!user) throw new NotFoundException('저장되어있지 않은 회원정보입니다.');
