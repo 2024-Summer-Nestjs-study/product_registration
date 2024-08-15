@@ -1,9 +1,20 @@
-import { Body, Controller, Delete, Get, Patch, Query } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserRegistDto } from './userDto/user.regist.dto';
 import { UserLoginDto } from './userDto/user.login.dto';
 import { UserUpdateDto } from './userDto/user.update.dto';
 import { UserDeleteDto } from './userDto/user.delete.dto';
+import { AccessGuard } from '../jwt/access.guard';
+import { RefreshGuard } from '../jwt/refresh.guard';
 
 @Controller('user')
 export class UserController {
@@ -24,5 +35,15 @@ export class UserController {
   @Delete('delete')
   async delete(@Query() query: UserDeleteDto) {
     return this.userService.delete(query);
+  }
+  @Post('hi')
+  @UseGuards(AccessGuard)
+  async hi(@Request() req: Request) {
+    return req['user'];
+  }
+  @UseGuards(RefreshGuard)
+  @Post('getAccess')
+  async getAccess(@Request() req: Request) {
+    return this.userService.getAccess(req);
   }
 }
