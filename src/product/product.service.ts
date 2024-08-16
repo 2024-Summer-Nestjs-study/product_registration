@@ -25,14 +25,14 @@ export class ProductService {
     await this.productEntity.save(product);
     return '상품등록이 되었습니다!';
   }
-  async find(query: ProductFindDto) {
+  async find(query: ProductFindDto, @Request() req: Request) {
     const data: ProductEntity[] = await this.productEntity.find({
       relations: {
         user: true,
       },
       where: {
         user: {
-          id: query.userid,
+          id: req['user'].userid,
         },
       },
       select: {

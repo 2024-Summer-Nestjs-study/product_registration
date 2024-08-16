@@ -23,8 +23,8 @@ export class ProductController {
     return this.productService.create(query, req);
   }
   @Get('find')
-  async find(@Query() query: ProductFindDto) {
-    return this.productService.find(query);
+  async find(@Query() query: ProductFindDto, @Request() req: Request) {
+    return this.productService.find(query, req);
   }
   @Patch('edit')
   async edit(@Query() query: ProductEditDto) {
