@@ -29,7 +29,6 @@ export class AccessGuard implements CanActivate {
       }
       console.log(e);
       throw new UnauthorizedException();
-      return req['user'];
     }
     return true;
   }
