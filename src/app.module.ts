@@ -7,18 +7,26 @@ import { ProductEntity } from './Entity/product.entity';
 import { UserModule } from './user/user.module';
 import { ProductModule } from './product/product.module';
 import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mariadb',
-      host: '113.198.230.24',
-      port: 352,
-      username: 'jin',
-      password: '1234',
-      database: 'registration',
-      entities: [UserEntity, ProductEntity],
-      synchronize: true,
+    ConfigModule.forRoot({
+      envFilePath: './src/.env',
+      isGlobal: true,
+    }),
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'mariadb',
+        host: configService.get('DB_HOST'),
+        port: parseInt(configService.get('DB_PORT')),
+        username: configService.get('DB_USERNAME'),
+        password: configService.get('DB_PASSWORD'),
+        database: configService.get('DB_NAME'),
+        entities: [UserEntity, ProductEntity],
+        synchronize: true,
+      }),
     }),
     UserModule,
     ProductModule,
