@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, Request } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  Request,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../Entity/user.entity';
 import { Repository } from 'typeorm';
@@ -9,6 +14,7 @@ import { UserDeleteDto } from './userDto/user.delete.dto';
 import { ProductEntity } from '../Entity/product.entity';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -24,7 +30,7 @@ export class UserService {
     const data: UserEntity = new UserEntity();
     data.userName = body.userName;
     data.userID = body.userID;
-    data.userPW = body.userPW;
+    data.userPW = await bcrypt.hash(body.userPW, 10);
 
     const result: UserEntity = await this.userEntity.save(data);
     console.log(result);
@@ -34,10 +40,15 @@ export class UserService {
     const data: UserEntity = await this.userEntity.findOne({
       where: {
         userID: query.userID,
-        userPW: query.userPW,
       },
     });
-    if (!data) throw new NotFoundException('옳지 않은 회원정보입니다.');
+    if (!data) throw new NotFoundException('ID가 틀렸습니다.');
+    const validatePassword = await bcrypt.compare(query.userPW, data.userPW);
+    console.log(validatePassword);
+    if (validatePassword === false) {
+      //console.log(query.userPW);
+      throw new UnauthorizedException('PW가 틀렸습니다.');
+    }
     console.log(data); //로그인 성공시 토큰 발급
     const payload = {
       id: data.id.toString(),
@@ -103,7 +114,7 @@ export class UserService {
     const newpayload = {
       id: req['user'].id,
     };
-    const secretA = '0000';
+    const secretA = this.configService.get('access_Key');
     const newaccess = await this.jwtService.sign(newpayload, {
       secret: secretA,
       expiresIn: '100s',
