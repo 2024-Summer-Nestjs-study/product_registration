@@ -1,10 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumberString, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class UserRegistDto {
   @ApiProperty({ description: '이름' })
   @IsString()
-  @IsNumberString()
   userName: string;
   @ApiProperty({ description: '아이디' })
   @IsString()
