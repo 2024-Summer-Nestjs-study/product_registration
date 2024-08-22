@@ -8,7 +8,7 @@ import { UserUpdateDto } from './userDto/user.update.dto';
 import { UserDeleteDto } from './userDto/user.delete.dto';
 import { ProductEntity } from '../Entity/product.entity';
 import { JwtService } from '@nestjs/jwt';
-import * as process from 'node:process';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
@@ -16,7 +16,7 @@ export class UserService {
     @InjectRepository(UserEntity)
     private readonly userEntity: Repository<UserEntity>,
     private jwtService: JwtService,
-
+    private configService: ConfigService,
     @InjectRepository(ProductEntity)
     private readonly productEntity: Repository<ProductEntity>,
   ) {}
@@ -43,8 +43,8 @@ export class UserService {
       id: data.id.toString(),
       userName: data.userName.toString(),
     };
-    const secretA = process.env.access_KEY;
-    const secretR = process.env.refresh_KEY;
+    const secretA = this.configService.get('access_Key');
+    const secretR = this.configService.get('refresh_Key');
     const refreshToken = this.jwtService.sign(payload, {
       secret: secretR,
       expiresIn: '1h',
