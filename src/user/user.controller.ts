@@ -6,7 +6,7 @@ import {
   Post,
   Query,
   UseGuards,
-  Request,
+  Request, Body,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserRegistDto } from './userDto/user.regist.dto';
@@ -26,7 +26,7 @@ import {
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get('regist')
+  @Post('regist')
   @ApiOperation({
     summary: '사용자 생성 API',
     description: '사용자를 생성한다.',
@@ -35,8 +35,8 @@ export class UserController {
     status: 201,
     description: '축하합니다! 회원가입에 성공하였습니다.:)',
   })
-  async regist(@Query() query: UserRegistDto) {
-    return this.userService.regist(query);
+  async regist(@Body() body: UserRegistDto) {
+    return this.userService.regist(body);
   }
   @Get('login')
   @ApiOperation({

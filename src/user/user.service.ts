@@ -20,11 +20,11 @@ export class UserService {
     @InjectRepository(ProductEntity)
     private readonly productEntity: Repository<ProductEntity>,
   ) {}
-  async regist(query: UserRegistDto) {
+  async regist(body: UserRegistDto) {
     const data: UserEntity = new UserEntity();
-    data.userName = query.userName;
-    data.userID = query.userID;
-    data.userPW = query.userPW;
+    data.userName = body.userName;
+    data.userID = body.userID;
+    data.userPW = body.userPW;
 
     const result: UserEntity = await this.userEntity.save(data);
     console.log(result);
