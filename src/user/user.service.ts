@@ -8,6 +8,7 @@ import { UserUpdateDto } from './userDto/user.update.dto';
 import { UserDeleteDto } from './userDto/user.delete.dto';
 import { ProductEntity } from '../Entity/product.entity';
 import { JwtService } from '@nestjs/jwt';
+import * as process from 'node:process';
 
 @Injectable()
 export class UserService {
@@ -42,8 +43,8 @@ export class UserService {
       id: data.id.toString(),
       userName: data.userName.toString(),
     };
-    const secretA = '0000';
-    const secretR = '1234';
+    const secretA = process.env.access_KEY;
+    const secretR = process.env.refresh_KEY;
     const refreshToken = this.jwtService.sign(payload, {
       secret: secretR,
       expiresIn: '1h',
