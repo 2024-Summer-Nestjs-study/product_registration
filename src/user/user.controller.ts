@@ -14,7 +14,12 @@ import { UserLoginDto } from './userDto/user.login.dto';
 import { UserUpdateDto } from './userDto/user.update.dto';
 import { UserDeleteDto } from './userDto/user.delete.dto';
 import { AccessGuard } from '../jwt/access.guard';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @Controller('user')
 @ApiTags('UserApi')
@@ -62,7 +67,7 @@ export class UserController {
     status: 404,
     description: '등록되어있지 않은 회원정보 입니다.',
   })
-  @ApiBearerAuth()
+  @ApiBearerAuth('access_token')
   @UseGuards(AccessGuard)
   async update(@Query() query: UserUpdateDto, @Request() req: Request) {
     return this.userService.update(query, req);
@@ -80,7 +85,7 @@ export class UserController {
     status: 404,
     description: '저장되어있지 않은 회원정보입니다.',
   })
-  @ApiBearerAuth()
+  @ApiBearerAuth('access_token')
   @UseGuards(AccessGuard)
   async delete(@Query() query: UserDeleteDto, @Request() req: Request) {
     return this.userService.delete(query, req);

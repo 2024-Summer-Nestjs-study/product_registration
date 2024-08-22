@@ -13,10 +13,16 @@ import { ProductFindDto } from './productDto/product.find.dto';
 import { ProductEditDto } from './productDto/product.edit.dto';
 import { ProductDeleteDto } from './productDto/product.delete.dto';
 import { AccessGuard } from '../jwt/access.guard';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @Controller('product')
 @ApiTags('Product Api')
+@ApiBearerAuth('access_token')
 @UseGuards(AccessGuard)
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
@@ -80,7 +86,7 @@ export class ProductController {
     status: 404,
     description: '등록되어있지 않는 상품 입니다.',
   })
-  @ApiBearerAuth('access-token')
+  @ApiBearerAuth()
   async delete(@Query() query: ProductDeleteDto) {
     return this.productService.delete(query);
   }

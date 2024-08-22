@@ -5,19 +5,24 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AccessGuard implements CanActivate {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private jwtService: JwtService,
+    private configService: ConfigService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest();
-    const token = req.headers.authorization;
+    const token = req.headers.authorization.replace('Bearer ', '');
+    console.log(token);
     if (!token) {
       console.log('헤드가 비어있습니다.');
       throw new UnauthorizedException();
     }
-    const secretA = '0000';
+    const secretA = this.configService.get('access_Key');
     try {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: secretA,
