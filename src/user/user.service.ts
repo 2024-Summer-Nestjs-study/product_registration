@@ -1,5 +1,6 @@
 import {
   Injectable,
+  Logger,
   NotFoundException,
   Request,
   UnauthorizedException,
@@ -18,6 +19,7 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
+  private readonly logger = new Logger(UserService.name);
   constructor(
     @InjectRepository(UserEntity)
     private readonly userEntity: Repository<UserEntity>,
@@ -34,6 +36,7 @@ export class UserService {
 
     const result: UserEntity = await this.userEntity.save(data);
     console.log(result);
+    this.logger.debug('🥳Logging...');
     return '축하합니다! 회원가입에 성공하였습니다.:)';
   }
   async login(query: UserLoginDto) {
@@ -42,11 +45,13 @@ export class UserService {
         userID: query.userID,
       },
     });
-    if (!data) throw new NotFoundException('ID가 틀렸습니다.');
+    if (!data) {
+      this.logger.error('☠️Logging...');
+      throw new NotFoundException('ID가 틀렸습니다.');
+    }
     const validatePassword = await bcrypt.compare(query.userPW, data.userPW);
-    console.log(validatePassword);
     if (validatePassword === false) {
-      //console.log(query.userPW);
+      this.logger.error('☠️Logging...');
       throw new UnauthorizedException('PW가 틀렸습니다.');
     }
     console.log(data); //로그인 성공시 토큰 발급
@@ -79,6 +84,7 @@ export class UserService {
       },
     });
     if (!data) {
+      this.logger.error('☠️Logging...');
       throw new NotFoundException('등록되어있지 않은 회원정보 입니다.');
     }
     await this.userEntity.update(
@@ -100,7 +106,10 @@ export class UserService {
         userPW: req['user'].userPW,
       },
     });
-    if (!user) throw new NotFoundException('저장되어있지 않은 회원정보입니다.');
+    if (!user) {
+      this.logger.error('☠️Logging...');
+      throw new NotFoundException('저장되어있지 않은 회원정보입니다.');
+    }
     const product = await this.productEntity
       .createQueryBuilder('product_entity')
       .delete()

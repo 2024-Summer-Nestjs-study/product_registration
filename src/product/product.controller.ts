@@ -5,7 +5,7 @@ import {
   Get,
   Patch,
   Query,
-  UseGuards,
+  UseGuards, Logger,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { ProductCreateDto } from './productDto/product.create.dto';
@@ -25,6 +25,7 @@ import {
 @ApiBearerAuth('access_token')
 @UseGuards(AccessGuard)
 export class ProductController {
+  private readonly logger = new Logger(ProductController.name);
   constructor(private readonly productService: ProductService) {}
   @Get('create')
   @ApiOperation({
@@ -37,6 +38,7 @@ export class ProductController {
   })
   @ApiBearerAuth()
   async create(@Query() query: ProductCreateDto, @Request() req: Request) {
+    this.logger.warn('🆕Logging...');
     return this.productService.create(query, req);
   }
   @Get('find')
@@ -54,6 +56,7 @@ export class ProductController {
   })
   @ApiBearerAuth()
   async find(@Query() query: ProductFindDto, @Request() req: Request) {
+    this.logger.warn('✔️Logging...');
     return this.productService.find(query, req);
   }
   @Patch('edit')
@@ -71,6 +74,7 @@ export class ProductController {
   })
   @ApiBearerAuth()
   async edit(@Query() query: ProductEditDto) {
+    this.logger.warn('🛠️Logging...');
     return this.productService.edit(query);
   }
   @Delete('delete')
@@ -88,6 +92,7 @@ export class ProductController {
   })
   @ApiBearerAuth()
   async delete(@Query() query: ProductDeleteDto) {
+    this.logger.warn('☠️Logging...');
     return this.productService.delete(query);
   }
 }

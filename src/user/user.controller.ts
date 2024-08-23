@@ -6,7 +6,9 @@ import {
   Post,
   Query,
   UseGuards,
-  Request, Body,
+  Request,
+  Body,
+  Logger,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserRegistDto } from './userDto/user.regist.dto';
@@ -24,6 +26,7 @@ import {
 @Controller('user')
 @ApiTags('UserApi')
 export class UserController {
+  private readonly logger = new Logger(UserController.name);
   constructor(private readonly userService: UserService) {}
 
   @Post('regist')
@@ -36,6 +39,7 @@ export class UserController {
     description: '축하합니다! 회원가입에 성공하였습니다.:)',
   })
   async regist(@Body() body: UserRegistDto) {
+    this.logger.warn('🆕Logging...');
     return this.userService.regist(body);
   }
   @Get('login')
@@ -52,6 +56,7 @@ export class UserController {
     description: '옳지 않은 회원정보입니다.',
   })
   async login(@Query() query: UserLoginDto) {
+    this.logger.warn('✔️Logging...');
     return this.userService.login(query);
   }
   @Patch('update')
@@ -70,6 +75,7 @@ export class UserController {
   @ApiBearerAuth('access_token')
   @UseGuards(AccessGuard)
   async update(@Query() query: UserUpdateDto, @Request() req: Request) {
+    this.logger.warn('🛠️Logging...');
     return this.userService.update(query, req);
   }
   @Delete('delete')
@@ -88,6 +94,7 @@ export class UserController {
   @ApiBearerAuth('access_token')
   @UseGuards(AccessGuard)
   async delete(@Query() query: UserDeleteDto, @Request() req: Request) {
+    this.logger.warn('☠️Logging...');
     return this.userService.delete(query, req);
   }
   @Post('getAccess')

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, Request } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, Request } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductEntity } from '../Entity/product.entity';
 import { Repository } from 'typeorm';
@@ -10,6 +10,7 @@ import { ProductDeleteDto } from './productDto/product.delete.dto';
 
 @Injectable()
 export class ProductService {
+  private readonly logger = new Logger(ProductService.name);
   constructor(
     @InjectRepository(ProductEntity)
     private readonly productEntity: Repository<ProductEntity>,
@@ -23,6 +24,7 @@ export class ProductService {
     product.user = user;
 
     await this.productEntity.save(product);
+    this.logger.debug('🥳Logging...');
     return '상품등록이 되었습니다!';
   }
   async find(query: ProductFindDto, @Request() req: Request) {
@@ -45,7 +47,10 @@ export class ProductService {
       },
     });
     console.log(data);
-    if (!data[0]) throw new NotFoundException('등록되어 있지 않습니다.');
+    if (!data[0]) {
+      this.logger.error('☠️Logging...');
+      throw new NotFoundException('등록되어 있지 않습니다.');
+    }
     return data;
   }
   async edit(query: ProductEditDto) {
@@ -55,6 +60,7 @@ export class ProductService {
       },
     });
     if (!data) {
+      this.logger.error('☠️Logging...');
       throw new NotFoundException('등록되어있지 않은 상품입니다.');
     }
     await this.productEntity.update(
@@ -69,8 +75,12 @@ export class ProductService {
         name: query.name,
       },
     });
-    if (!data) throw new NotFoundException('등록되어있지 않는 상품 입니다.');
+    if (!data) {
+      this.logger.error('☠️Logging...');
+      throw new NotFoundException('등록되어있지 않는 상품 입니다.');
+    }
     await this.productEntity.delete(data);
+    this.logger.debug('Logging...');
     return '상품이 삭제되었습니다.';
   }
 }
