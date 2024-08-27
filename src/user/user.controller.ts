@@ -55,6 +55,7 @@ export class UserController {
     status: 404,
     description: '옳지 않은 회원정보입니다.',
   })
+  //DTO누락 (Response)
   async login(@Query() query: UserLoginDto) {
     this.logger.warn('✔️Logging...');
     return this.userService.login(query);
@@ -75,6 +76,7 @@ export class UserController {
   @ApiBearerAuth('access_token')
   @UseGuards(AccessGuard)
   async update(@Query() query: UserUpdateDto, @Request() req: Request) {
+    const id = req['user'].userName
     this.logger.warn('🛠️Logging...');
     return this.userService.update(query, req);
   }

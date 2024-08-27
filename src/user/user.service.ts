@@ -16,6 +16,7 @@ import { ProductEntity } from '../Entity/product.entity';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
+import { LoginResDto } from './userDto/resDto/login.res.dto';
 
 @Injectable()
 export class UserService {
@@ -40,6 +41,7 @@ export class UserService {
     return '축하합니다! 회원가입에 성공하였습니다.:)';
   }
   async login(query: UserLoginDto) {
+    const resDto = new LoginResDto();
     const data: UserEntity = await this.userEntity.findOne({
       where: {
         userID: query.userID,
@@ -54,7 +56,6 @@ export class UserService {
       this.logger.error('☠️Logging...');
       throw new UnauthorizedException('PW가 틀렸습니다.');
     }
-    console.log(data); //로그인 성공시 토큰 발급
     const payload = {
       id: data.id.toString(),
       userName: data.userName.toString(),
@@ -69,36 +70,25 @@ export class UserService {
       secret: secretA,
       expiresIn: '100s',
     });
-    return (
-      'accessToken : ' +
-      [accessToken] +
-      '\n' +
-      'refreshToken : ' +
-      [refreshToken]
-    );
+    resDto.refreshToken = refreshToken;
+    resDto.accessToken = accessToken;
+    return resDto;
   }
-  async update(query: UserUpdateDto, @Request() req: Request) {
+  async update(query: UserUpdateDto, req: Request) {
     const data: UserEntity = await this.userEntity.findOne({
       where: {
-        userName: req['user'].userName,
+        id: req['user'].id,
       },
     });
     if (!data) {
       this.logger.error('☠️Logging...');
       throw new NotFoundException('등록되어있지 않은 회원정보 입니다.');
     }
-    await this.userEntity.update(
-      { userName: req['user'].userName },
-      { userID: query.userID, userPW: query.userPW },
-    );
-    const updatedata = await this.userEntity.findOne({
-      where: {
-        userName: req['user'].userName,
-      },
-    });
-    return `${updatedata.userName}님의 회원정보가 변경되었습니다!`;
+    data.userPW = await bcrypt.hash(query.userPW, 10);
+    await this.userEntity.update({ userName: req['user'].userName }, data);
+    return data;
   }
-  async delete(query: UserDeleteDto, @Request() req: Request) {
+  async delete(query: UserDeleteDto, req: Request) {
     const user = await this.userEntity.findOne({
       where: {
         userName: req['user'].userName,
@@ -119,12 +109,13 @@ export class UserService {
     await this.userEntity.delete(user);
     return '회원탈퇴 되었습니다.';
   }
-  async getAccess(@Request() req: Request) {
+  //고쳐오기
+  async getAccess(req: Request) {
     const newpayload = {
       id: req['user'].id,
     };
     const secretA = this.configService.get('access_Key');
-    const newaccess = await this.jwtService.sign(newpayload, {
+    const newaccess = this.jwtService.sign(newpayload, {
       secret: secretA,
       expiresIn: '100s',
     });
