@@ -34,7 +34,9 @@ export class AccessGuard implements CanActivate {
         throw new UnauthorizedException('access 아닌데?');
       }
       if (e.name === 'TokenExpiredError') {
-        throw new UnauthorizedException('만료되었습니다. 다시 로그인 하세요.');
+        throw new UnauthorizedException(
+          '만료되었습니다. 토큰을 다시 발급 받으시오.',
+        );
       }
       console.log(e);
       throw new UnauthorizedException();
