@@ -28,9 +28,13 @@ export class AccessGuard implements CanActivate {
         secret: secretA,
       });
       req['user'] = payload;
+      console.log(req['user'].userPW);
     } catch (e) {
       if (e.name === 'JsonWebTokenError') {
         throw new UnauthorizedException('access 아닌데?');
+      }
+      if (e.name === 'TokenExpiredError') {
+        throw new UnauthorizedException('만료되었습니다. 다시 로그인 하세요.');
       }
       console.log(e);
       throw new UnauthorizedException();
