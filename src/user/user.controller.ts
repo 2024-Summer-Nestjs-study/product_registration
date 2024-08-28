@@ -76,7 +76,6 @@ export class UserController {
   @ApiBearerAuth('access_token')
   @UseGuards(AccessGuard)
   async update(@Query() query: UserUpdateDto, @Request() req: Request) {
-    const id = req['user'].userName
     this.logger.warn('🛠️Logging...');
     return this.userService.update(query, req);
   }

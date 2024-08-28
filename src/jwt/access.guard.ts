@@ -17,7 +17,6 @@ export class AccessGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest();
     const token = req.headers.authorization;
-    console.log(token);
     if (!token) {
       console.log('헤드가 비어있습니다.');
       throw new UnauthorizedException();
