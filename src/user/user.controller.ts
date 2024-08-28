@@ -22,6 +22,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { RefreshGuard } from '../jwt/refresh.guard';
 
 @Controller('user')
 @ApiTags('UserApi')
@@ -107,6 +108,8 @@ export class UserController {
     status: 201,
     description: 'accessToken 발급',
   })
+  @ApiBearerAuth('refresh_token')
+  @UseGuards(RefreshGuard)
   async getAccess(@Request() req: Request) {
     return this.userService.getAccess(req);
   }

@@ -13,6 +13,12 @@ async function bootstrap() {
       name: 'JWT',
       in: 'Header',
     })
+    .addSecurity('refresh_token', {
+      type: 'http',
+      scheme: 'bearer',
+      name: 'JWT',
+      in: 'Body',
+    })
     .setTitle('Product Registration')
     .setDescription(
       '이 서비스는 회원가입으로 회원 정보가 저장되고 권한이 주어지면 상품 등록, 회원에 대한 상품 찾기, 상품 정보 수정, 상품 삭제가 가능한 서비스입니다.',

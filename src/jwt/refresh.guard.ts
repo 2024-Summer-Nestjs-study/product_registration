@@ -21,9 +21,10 @@ export class RefreshGuard implements CanActivate {
       console.log('헤드가 비어있습니다.');
       throw new UnauthorizedException();
     }
+    const jwt = token.replace('Bearer ', '');
     const secretR = this.configService.get('refresh_Key');
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
+      const payload = await this.jwtService.verifyAsync(jwt, {
         secret: secretR,
       });
       req['user'] = payload;
