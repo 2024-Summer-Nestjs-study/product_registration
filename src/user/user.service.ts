@@ -85,7 +85,8 @@ export class UserService {
       throw new NotFoundException('등록되어있지 않은 회원정보 입니다.');
     }
     data.userPW = await bcrypt.hash(query.userPW, 10);
-    await this.userEntity.update({ userName: req['user'].userName }, data);
+    console.log(data);
+    await this.userEntity.update({ id: req['user'].id }, data);
     return data;
   }
   async delete(query: UserDeleteDto, req: Request) {
@@ -114,11 +115,12 @@ export class UserService {
     const newpayload = {
       id: req['user'].id,
     };
+    console.log(newpayload);
     const secretA = this.configService.get('access_Key');
     const newaccess = this.jwtService.sign(newpayload, {
       secret: secretA,
       expiresIn: '100s',
     });
-    return newaccess;
+    return { newaccess };
   }
 }
