@@ -4,7 +4,6 @@ import { ProductEntity } from '../Entity/product.entity';
 import { Repository } from 'typeorm';
 import { ProductCreateDto } from './productDto/product.create.dto';
 import { UserEntity } from '../Entity/user.entity';
-import { ProductFindDto } from './productDto/product.find.dto';
 import { ProductEditDto } from './productDto/product.edit.dto';
 import { ProductDeleteDto } from './productDto/product.delete.dto';
 
@@ -15,7 +14,7 @@ export class ProductService {
     @InjectRepository(ProductEntity)
     private readonly productEntity: Repository<ProductEntity>,
   ) {}
-  async create(query: ProductCreateDto, @Request() req: Request) {
+  async create(query: ProductCreateDto, req: Request) {
     const user: UserEntity = new UserEntity();
     user.id = req['user'].id;
     const product: ProductEntity = new ProductEntity();
@@ -27,14 +26,14 @@ export class ProductService {
     this.logger.debug('🥳Logging...');
     return '상품등록이 되었습니다!';
   }
-  async find(query: ProductFindDto, @Request() req: Request) {
+  async find(req: Request) {
     const data: ProductEntity[] = await this.productEntity.find({
       relations: {
         user: true,
       },
       where: {
         user: {
-          id: req['user'].userid,
+          id: req['user'].id,
         },
       },
       select: {
