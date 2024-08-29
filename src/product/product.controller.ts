@@ -5,11 +5,12 @@ import {
   Get,
   Patch,
   Query,
-  UseGuards, Logger,
+  UseGuards,
+  Logger,
+  Post,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { ProductCreateDto } from './productDto/product.create.dto';
-import { ProductFindDto } from './productDto/product.find.dto';
 import { ProductEditDto } from './productDto/product.edit.dto';
 import { ProductDeleteDto } from './productDto/product.delete.dto';
 import { AccessGuard } from '../jwt/access.guard';
@@ -41,7 +42,7 @@ export class ProductController {
     this.logger.warn('🆕Logging...');
     return this.productService.create(query, req);
   }
-  @Get('find')
+  @Post('find')
   @ApiOperation({
     summary: '상품 정보 출력 API',
     description: '해당 사용자가 어떤 상품을 등록했는지 알 수 있는 Api이다.',
@@ -55,9 +56,9 @@ export class ProductController {
     description: '등록되어 있지 않습니다.',
   })
   @ApiBearerAuth()
-  async find(@Query() query: ProductFindDto, @Request() req: Request) {
+  async find(@Request() req: Request) {
     this.logger.warn('✔️Logging...');
-    return this.productService.find(query, req);
+    return this.productService.find(req);
   }
   @Patch('edit')
   @ApiOperation({
