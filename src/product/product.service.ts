@@ -21,7 +21,6 @@ export class ProductService {
     product.name = query.name;
     product.price = query.price;
     product.user = user;
-
     await this.productEntity.save(product);
     this.logger.debug('🥳Logging...');
     return '상품등록이 되었습니다!';
@@ -48,14 +47,17 @@ export class ProductService {
     console.log(data);
     if (!data[0]) {
       this.logger.error('☠️Logging...');
-      throw new NotFoundException('등록되어 있지 않습니다.');
+      throw new NotFoundException('등록된 상품이 없습니다.');
     }
     return data;
   }
-  async edit(query: ProductEditDto) {
+  async edit(query: ProductEditDto, req: Request) {
     const data: ProductEntity = await this.productEntity.findOne({
       where: {
         name: query.name,
+        user: {
+          id: req['user'].id,
+        },
       },
     });
     if (!data) {
@@ -68,10 +70,13 @@ export class ProductService {
     );
     return data;
   }
-  async delete(query: ProductDeleteDto) {
+  async delete(query: ProductDeleteDto, req: Request) {
     const data: ProductEntity = await this.productEntity.findOne({
       where: {
         name: query.name,
+        user: {
+          id: req['user'].id,
+        },
       },
     });
     if (!data) {

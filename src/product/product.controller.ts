@@ -74,9 +74,9 @@ export class ProductController {
     description: '등록되어있지 않은 상품입니다.',
   })
   @ApiBearerAuth()
-  async edit(@Query() query: ProductEditDto) {
+  async edit(@Query() query: ProductEditDto, @Request() req: Request) {
     this.logger.warn('🛠️Logging...');
-    return this.productService.edit(query);
+    return this.productService.edit(query, req);
   }
   @Delete('delete')
   @ApiOperation({
@@ -92,8 +92,8 @@ export class ProductController {
     description: '등록되어있지 않는 상품 입니다.',
   })
   @ApiBearerAuth()
-  async delete(@Query() query: ProductDeleteDto) {
+  async delete(@Query() query: ProductDeleteDto, @Request() req: Request) {
     this.logger.warn('☠️Logging...');
-    return this.productService.delete(query);
+    return this.productService.delete(query, req);
   }
 }
