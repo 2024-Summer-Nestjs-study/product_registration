@@ -115,7 +115,6 @@ export class UserService {
     const newpayload = {
       id: req['user'].id,
     };
-    console.log(newpayload);
     const secretA = this.configService.get('access_Key');
     const newaccess = this.jwtService.sign(newpayload, {
       secret: secretA,
