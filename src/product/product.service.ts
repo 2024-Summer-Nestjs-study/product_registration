@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException, Request } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, Request, ServiceUnavailableException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductEntity } from '../Entity/product.entity';
 import { Repository } from 'typeorm';
@@ -21,7 +21,25 @@ export class ProductService {
     product.name = query.name;
     product.price = query.price;
     product.user = user;
-    await this.productEntity.save(product);
+    const sameData: ProductEntity = await this.productEntity.findOne({
+      relations: {
+        user: true,
+      },
+      where: {
+        user: {
+          id: req['user'].id,
+        },
+        name: product.name,
+      },
+    });
+    if (!sameData) {
+      await this.productEntity.save(product);
+    } else {
+      this.logger.error('☠️Logging...');
+      throw new ServiceUnavailableException(
+        '이미 상품 등록이 되어있는 상품입니다.',
+      );
+    }
     this.logger.debug('🥳Logging...');
     return '상품등록이 되었습니다!';
   }
@@ -44,7 +62,6 @@ export class ProductService {
         },
       },
     });
-    console.log(data);
     if (!data[0]) {
       this.logger.error('☠️Logging...');
       throw new NotFoundException('등록된 상품이 없습니다.');
