@@ -85,7 +85,6 @@ export class UserService {
       throw new NotFoundException('등록되어있지 않은 회원정보 입니다.');
     }
     data.userPW = await bcrypt.hash(query.userPW, 10);
-    console.log(data);
     await this.userEntity.update({ id: req['user'].id }, data);
     return data;
   }
